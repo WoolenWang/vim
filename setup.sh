@@ -8,7 +8,7 @@ fi
 sudo easy_install -ZU autopep8 twisted
 sudo ln -s /usr/bin/ctags /usr/local/bin/ctags
 mv ~/vim ~/vim_old -f
-cd ~/ && git clone https://github.com/ma6174/vim.git
+cd ~/ && git clone https://github.com/WoolenWang/vim.git
 mv ~/.vim ~/.vim_old -f
 mv ~/vim ~/.vim -f
 mv ~/.vim/.vimrc ~/ -f
