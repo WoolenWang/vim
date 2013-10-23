@@ -8,7 +8,7 @@
 
 打开终端，执行下面的命令就自动安装好了：
 
-`wget https://raw.github.com/woolen/vim/master/setup.sh -O woolen_vim_setup.sh && bash woolen_vim_setup.sh`
+`wget https://raw.github.com/WoolenWang/vim/master/setup.sh -O woolen_vim_setup.sh && bash woolen_vim_setup.sh`
 
 ### 或者自己手动安装：(以ubuntu为例)
 
