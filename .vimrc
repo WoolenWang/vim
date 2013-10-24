@@ -9,6 +9,7 @@ set sm
 set selection=inclusive
 set wildmenu
 set mousemodel=popup
+let g:snippets_dir="~/.vim/snippets"
 
 au FileType php setlocal dict+=~/.vim/dict/php_funclist.dict
 au FileType css setlocal dict+=~/.vim/dict/css.dict
