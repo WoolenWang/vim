@@ -459,7 +459,7 @@ Bundle 'Django-Projects'
 "ruby the need plugin
 Bundle "MarcWeber/vim-addon-mw-utils"
 Bundle "tomtom/tlib_vim"
-Bundle "garbas/vim-snipmate"
+Bundle "snipmate-snippets"
 Bundle "rails.vim"
 
 "Bundle 'FredKSchott/CoVim'
