@@ -54,8 +54,8 @@ set laststatus=2    " 启动显示状态行(1),总是显示状态行(2)
 set nocompatible  "去掉讨厌的有关vi一致性模式，避免以前版本的一些bug和局限  
 " 显示中文帮助
 if version >= 603
-	set helplang=cn
-	set encoding=utf-8
+    set helplang=cn
+    set encoding=utf-8
 endif
 " 自动缩进
 set autoindent
@@ -115,45 +115,45 @@ nmap tt :%s/\t/    /g<CR>
 autocmd BufNewFile *.cpp,*.[ch],*.sh,*.java,*.py exec ":call SetTitle()" 
 ""定义函数SetTitle，自动插入文件头 
 func SetTitle()
-        "如果文件类型为.sh文件
-        if &filetype == 'sh' || &filetype == 'python' || &filetype == 'ruby'
-                call setline(1, "\#========================================================================")
-                call append(line("."), "\# Author: Woolen.Wang")
-                call append(line(".")+1, "\# Email: just_woolen＠qq.com")
-                call append(line(".")+2, "\# File Name: ".expand("%"))
-                call append(line(".")+3, "\# Description: ")
-                call append(line(".")+4, "\#   ")
-                call append(line(".")+5, "\# Edit History: ")
-                call append(line(".")+6, "\#   ".strftime("%Y-%m-%d")."    File created.")
-                call append(line(".")+7, "\#========================================================================")
-                call append(line(".")+8, "") 
-        else
-                call setline(1, "/**")
-                call append(line("."), "=========================================================================")
-                call append(line("."), "\# Author: Woolen.Wang")
-                call append(line(".")+1, "\# Email: just_woolen＠qq.com")
-                call append(line(".")+2, "\# File Name: ".expand("%"))
-                call append(line(".")+4, " Description: ")
-                call append(line(".")+5, "   ")
-                call append(line(".")+6, " Edit History: ")
-                call append(line(".")+7, "   ".strftime("%Y-%m-%d")."    File created.")
-                call append(line(".")+8, "=========================================================================")
-                call append(line(".")+9, "**/")
-                call append(line(".")+10, "") 
-        endif
-        if &filetype == 'php'
-                call append(0, "<?php")
-                call append(line("$"), "?>")
-        endif
-        if &filetype == 'sh'
-                call append(0, "\#!/bin/bash")
-        elseif &filetype == 'python'
-                call append(0, "\#!/usr/bin/env python")
-                call append(1, "\# -*- coding: utf-8 -*-")
-        elseif &filetype == 'ruby'
-                call append(0, "\#!/usr/bin/env ruby")
-                call append(1, "\# -*- coding: utf-8 -*-")
-        endif
+    "如果文件类型为.sh文件
+    if &filetype == 'sh' || &filetype == 'python' || &filetype == 'ruby'
+        call setline(1, "\#========================================================================")
+        call append(line("."), "\# Author: Woolen.Wang")
+        call append(line(".")+1, "\# Email: just_woolen＠qq.com")
+        call append(line(".")+2, "\# File Name: ".expand("%"))
+        call append(line(".")+3, "\# Description: ")
+        call append(line(".")+4, "\#   ")
+        call append(line(".")+5, "\# Edit History: ")
+        call append(line(".")+6, "\#   ".strftime("%Y-%m-%d")."    File created.")
+        call append(line(".")+7, "\#========================================================================")
+        call append(line(".")+8, "") 
+    else
+        call setline(1, "/**")
+        call append(line("."), "=========================================================================")
+        call append(line("."), "\# Author: Woolen.Wang")
+        call append(line(".")+1, "\# Email: just_woolen＠qq.com")
+        call append(line(".")+2, "\# File Name: ".expand("%"))
+        call append(line(".")+4, " Description: ")
+        call append(line(".")+5, "   ")
+        call append(line(".")+6, " Edit History: ")
+        call append(line(".")+7, "   ".strftime("%Y-%m-%d")."    File created.")
+        call append(line(".")+8, "=========================================================================")
+        call append(line(".")+9, "**/")
+        call append(line(".")+10, "") 
+    endif
+    if &filetype == 'php'
+        call append(0, "<?php")
+        call append(line("$"), "?>")
+    endif
+    if &filetype == 'sh'
+        call append(0, "\#!/bin/bash")
+    elseif &filetype == 'python'
+        call append(0, "\#!/usr/bin/env python")
+        call append(1, "\# -*- coding: utf-8 -*-")
+    elseif &filetype == 'ruby'
+        call append(0, "\#!/usr/bin/env ruby")
+        call append(1, "\# -*- coding: utf-8 -*-")
+    endif
 endfunc
 autocmd BufNewFile * normal G
 
@@ -188,39 +188,50 @@ map <F3> :NERDTree<CR>
 "打开树状文件目录  
 map <C-F3> \be  
 :autocmd BufRead,BufNewFile *.dot map <F5> :w<CR>:!dot -Tjpg -o %<.jpg % && eog %<.jpg  <CR><CR> && exec "redr!"
-"C，C++ 按F5编译运行
-map <F5> :call CompileRunGcc()<CR>
-func! CompileRunGcc()
-	exec "w"
-	if &filetype == 'c'
-		exec "!g++ % -o %<"
-		exec "!time ./%<"
-	elseif &filetype == 'cpp'
-		exec "!g++ % -o %<"
-		exec "!time ./%<"
-	elseif &filetype == 'java' 
-		exec "!javac %" 
-		exec "!time java %<"
-	elseif &filetype == 'sh'
-		:!time bash %
-	elseif &filetype == 'python'
-		exec "!time python2.7 %"
+"源代码 按F5编译运行
+map <F5> :call CompileRun()<CR>
+func! CompileRun()
+    exec "w"
+    if &filetype == 'c'
+        exec "!g++ % -o %<"
+        exec "!time ./%<"
+    elseif &filetype == 'cpp'
+        exec "!g++ % -o %<"
+        exec "!time ./%<"
+    elseif &filetype == 'java' 
+        exec "!javac %" 
+        exec "!time java %<"
+    elseif &filetype == 'sh'
+        :!time bash %
+    elseif &filetype == 'python'
+        exec "!time python2.7 %"
     elseif &filetype == 'html'
         exec "!firefox % &"
     elseif &filetype == 'go'
-"        exec "!go build %<"
+        "        exec "!go build %<"
         exec "!time go run %"
     elseif &filetype == 'mkd'
         exec "!~/.vim/markdown.pl % > %.html &"
         exec "!firefox %.html &"
-	endif
+    elseif &filetype == 'php'
+        exec "!php %"
+    endif
 endfunc
-"C,C++的调试
+"代码的调试
 map <F6> :call Rungdb()<CR>
 func! Rungdb()
-	exec "w"
-	exec "!g++ % -g -o %<"
-	exec "!gdb ./%<"
+    exec "w"
+    if &filetype == 'c'
+        exec "!gcc % -g -o %<"
+        exec "!gdb %<"
+    elseif &filetype == 'cpp'
+        exec "!g++ % -g -o %<"
+        exec "!gdb %<"
+    elseif &filetype == 'php'
+        exec "!php %"
+    elseif &filetype == 'sh'
+        exec "!bash -x %"
+    endif
 endfunc
 
 
@@ -253,18 +264,68 @@ func FormartSrc()
 endfunc
 "结束定义FormartSrc
 
-
-
+"设置Cscope
+if has("cscope") && filereadable("/usr/local/bin/cscope")  
+    set csprg=/usr/local/bin/cscope
+    set csto=0  
+    set cst  
+    set nocsverb  
+    :let cscope_out="cscope.out"
+    :let b:count=1
+    while b:count < 15
+        if filereadable($cscope_out)
+            cs add $cscope_out
+            break
+        endif
+        :let b:count=b:count + 1
+        :let cscope_out="../" + $cscope_out
+    endwhile
+    if filereadable("cscope.out")  
+        cs add cscope.out
+    elseif filereadable("../cscope.out")
+        cs add ../cscope.out
+    elseif filereadable("../../cscope.out")
+        cs add ../../cscope.out
+    elseif filereadable("../../../cscope.out")
+        cs add ../../../cscope.out
+    elseif filereadable("../../../../cscope.out")
+        cs add ../../../../cscope.out
+    elseif filereadable("../../../../../cscope.out")
+        cs add ../../../../../cscope.out
+    elseif filereadable("../../../../../../cscope.out")
+        cs add ../../../../../../cscope.out
+    elseif filereadable("../../../../../../../cscope.out")
+        cs add ../../../../../../../cscope.out
+    elseif filereadable("../../../../../../../../cscope.out")
+        cs add ../../../../../../../../cscope.out
+    elseif filereadable("../../../../../../../../../cscope.out")
+        cs add ../../../../../../../../../cscope.out
+    elseif filereadable("../../../../../../../../../../cscope.out")
+        cs add ../../../../../../../../../../cscope.out
+    elseif $CSCOPE_DB != ""  
+        cs add $CSCOPE_DB  
+    endif  
+    set csverb  
+endif 
+"cscope 的一些热键
+nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR><CR>  
+nmap <C-\>g :cs find g <C-R>=expand("<cword>")<CR><CR>  
+nmap <C-\>c :cs find c <C-R>=expand("<cword>")<CR><CR>  
+nmap <C-\>t :cs find t <C-R>=expand("<cword>")<CR><CR>  
+nmap <C-\>e :cs find e <C-R>=expand("<cword>")<CR><CR>  
+nmap <C-\>f :cs find f <C-R>=expand("<cfile>")<CR><CR>  
+nmap <C-\>i :cs find i <C-R>=expand("<cfile>")<CR><CR>  
+nmap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>  
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 ""实用设置
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 if has("autocmd")
-      autocmd BufReadPost *
-          \ if line("'\"") > 0 && line("'\"") <= line("$") |
-          \   exe "normal g`\"" |
-          \ endif
+    autocmd BufReadPost *
+                \ if line("'\"") > 0 && line("'\"") <= line("$") |
+                \   exe "normal g`\"" |
+                \ endif
 endif
 "当打开vim且没有文件时自动打开NERDTree
 autocmd vimenter * if !argc() | NERDTree | endif
@@ -375,7 +436,7 @@ let Tlist_Exist_OnlyWindow = 1  " 如果只有一个buffer，kill窗口也kill�
 "其他东东
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "默认打开Taglist 
-let Tlist_Auto_Open=0 
+let Tlist_Auto_Open=1 
 """""""""""""""""""""""""""""" 
 " Tag list (ctags) 
 """""""""""""""""""""""""""""""" 
