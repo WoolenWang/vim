@@ -428,7 +428,6 @@ Bundle 'tpope/vim-fugitive'
 Bundle 'rstacruz/sparkup', {'rtp': 'vim/'}
 Bundle 'Yggdroot/indentLine'
 let g:indentLine_char = '┊'
-"ndle 'tpope/vim-rails.git'
 " vim-scripts repos
 Bundle 'L9'
 Bundle 'FuzzyFinder'
@@ -455,6 +454,12 @@ Bundle 'The-NERD-Commenter'
 "django
 Bundle 'django_templates.vim'
 Bundle 'Django-Projects'
+
+"ruby the need plugin
+Bundle "garbas/vim-snipmate"
+Bundle "tomtom/tlib_vim"
+Bundle "MarcWeber/vim-addon-mw-utils"
+Bundle 'tpope/vim-rails.git'
 
 "Bundle 'FredKSchott/CoVim'
 "Bundle 'djangojump'
