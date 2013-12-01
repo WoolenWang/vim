@@ -170,7 +170,7 @@ set go=             " 不要图形按钮
 "color desert     " 设置背景主题  
 color ron     " 设置背景主题  
 "color torte     " 设置背景主题  
-set guifont=YaHei_Consolas_Hybrid:h10:cANSI   " 设置字体  YaHei_Consolas_Hybrid:h10 Courier_New:h10:cANSI
+set guifont=YaHei_Consolas_Hybrid:h12:cANSI   " 设置字体  YaHei_Consolas_Hybrid:h10 Courier_New:h10:cANSI
 "autocmd InsertLeave * se nocul  " 用浅色高亮当前行  
 autocmd InsertEnter * se cul    " 用浅色高亮当前行  
 set ruler           " 显示标尺  
@@ -392,48 +392,30 @@ endfunc
 "结束定义FormartSrc
 
 "设置Cscope
-if has("cscope") && filereadable("/usr/local/bin/cscope")  
-    set csprg=/usr/local/bin/cscope
-    set csto=0  
-    set cst  
-    set nocsverb  
-    :let cscope_out="cscope.out"
-    :let b:count=1
-    while b:count < 15
-        if filereadable($cscope_out)
-            cs add $cscope_out
-            break
-        endif
-        :let b:count=b:count + 1
-        :let cscope_out="../" + $cscope_out
-    endwhile
-    if filereadable("cscope.out")  
+if (g:iswindows)
+    let g:cscope_cmd=$VIMRUNTIME . "/cscope.exe"
+else
+    let g:cscope_cmd="/usr/local/bin/cscope"
+endif
+set cscopequickfix=s-,c-,d-,i-,t-,e-
+if has("cscope")
+    let &csprg=g:cscope_cmd
+    set csto=1
+    set cst
+    set csverb
+    set cspc=3
+    "add any database in current dir
+    if filereadable("cscope.out")
         cs add cscope.out
-    elseif filereadable("../cscope.out")
-        cs add ../cscope.out
-    elseif filereadable("../../cscope.out")
-        cs add ../../cscope.out
-    elseif filereadable("../../../cscope.out")
-        cs add ../../../cscope.out
-    elseif filereadable("../../../../cscope.out")
-        cs add ../../../../cscope.out
-    elseif filereadable("../../../../../cscope.out")
-        cs add ../../../../../cscope.out
-    elseif filereadable("../../../../../../cscope.out")
-        cs add ../../../../../../cscope.out
-    elseif filereadable("../../../../../../../cscope.out")
-        cs add ../../../../../../../cscope.out
-    elseif filereadable("../../../../../../../../cscope.out")
-        cs add ../../../../../../../../cscope.out
-    elseif filereadable("../../../../../../../../../cscope.out")
-        cs add ../../../../../../../../../cscope.out
-    elseif filereadable("../../../../../../../../../../cscope.out")
-        cs add ../../../../../../../../../../cscope.out
-    elseif $CSCOPE_DB != ""  
-        cs add $CSCOPE_DB  
-    endif  
-    set csverb  
-endif 
+    "else search cscope.out elsewhere
+    else
+        let cscope_file=findfile("cscope.out", ".;")
+        "echo cscope_file
+        if !empty(cscope_file) && filereadable(cscope_file)
+            exe "cs add" cscope_file
+        endif      
+     endif
+endif
 "cscope 的一些热键
 nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR><CR>  
 nmap <C-\>g :cs find g <C-R>=expand("<cword>")<CR><CR>  
@@ -565,7 +547,11 @@ let Tlist_Auto_Open=1
 """""""""""""""""""""""""""""" 
 " Tag list (ctags) 
 """""""""""""""""""""""""""""""" 
-let Tlist_Ctags_Cmd = '/usr/local/bin/ctags' 
+if (g:iswindows)
+    let Tlist_Ctags_Cmd=$VIMRUNTIME . '/ctags'
+else
+    let Tlist_Ctags_Cmd='/usr/local/bin/ctags'
+endif
 let Tlist_Show_One_File = 1 "不同时显示多个文件的tag，只显示当前文件的 
 let Tlist_File_Fold_Auto_Close = 1
 let Tlist_Exit_OnlyWindow = 1 "如果taglist窗口是最后一个窗口，则退出vim 
@@ -590,7 +576,6 @@ nmap tl :Tlist<cr>
 "python补全
 let g:pydiction_location = '~/.vim/after/complete-dict'
 let g:pydiction_menu_height = 20
-let Tlist_Ctags_Cmd='/usr/local/bin/ctags'
 let g:miniBufExplMapWindowNavVim = 1
 let g:miniBufExplMapWindowNavArrows = 1
 let g:miniBufExplMapCTabSwitchBufs = 1
