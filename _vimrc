@@ -45,6 +45,7 @@ if (g:iswindows && g:isGUI)
     source $VIMRUNTIME/mswin.vim
     behave mswin
     set diffexpr=MyDiff()
+    set guifont=YaHei_Consolas_Hybrid:h12:cANSI   " 设置字体  YaHei_Consolas_Hybrid:h10 Courier_New:h10:cANSI
 
     function MyDiff()
         let opt = '-a --binary '
@@ -170,7 +171,6 @@ set go=             " 不要图形按钮
 "color desert     " 设置背景主题  
 color ron     " 设置背景主题  
 "color torte     " 设置背景主题  
-set guifont=YaHei_Consolas_Hybrid:h12:cANSI   " 设置字体  YaHei_Consolas_Hybrid:h10 Courier_New:h10:cANSI
 "autocmd InsertLeave * se nocul  " 用浅色高亮当前行  
 autocmd InsertEnter * se cul    " 用浅色高亮当前行  
 set ruler           " 显示标尺  
@@ -311,7 +311,17 @@ nnoremap <C-F2> :vert diffsplit
 "nnoremap <Leader>fu :CtrlPFunky<Cr>
 "nnoremap <C-n> :CtrlPFunky<Cr>
 "列出当前目录文件  
-map <F3> :NERDTree<CR>  
+let g:isNerdTreeOpen=0
+map <F3> :call ShowHideNerdTree()<CR>  
+func! ShowHideNerdTree()
+    if g:isNerdTreeOpen
+        exec ":NERDTreeClose"
+        let g:isNerdTreeOpen=0
+    else
+        exec ":NERDTree"
+        let g:isNerdTreeOpen=1
+    endif
+endfunc
 "打开树状文件目录  
 map <C-F3> \be  
 :autocmd BufRead,BufNewFile *.dot map <F5> :w<CR>:!dot -Tjpg -o %<.jpg % && eog %<.jpg  <CR><CR> && exec "redr!"
@@ -395,7 +405,7 @@ endfunc
 if (g:iswindows)
     let g:cscope_cmd=$VIMRUNTIME . "/cscope.exe"
 else
-    let g:cscope_cmd="/usr/local/bin/cscope"
+    let g:cscope_cmd="cscope"
 endif
 set cscopequickfix=s-,c-,d-,i-,t-,e-
 if has("cscope")
@@ -450,7 +460,7 @@ set completeopt=preview,menu
 "允许插件  
 "filetype plugin on
 "共享剪贴板  
-"set clipboard+=unnamed 
+set clipboard+=unnamed 
 "自动保存
 set autowrite
 "set ruler                   " 打开状态栏标尺
@@ -550,7 +560,7 @@ let Tlist_Auto_Open=1
 if (g:iswindows)
     let Tlist_Ctags_Cmd=$VIMRUNTIME . '/ctags'
 else
-    let Tlist_Ctags_Cmd='/usr/local/bin/ctags'
+    let Tlist_Ctags_Cmd='ctags'
 endif
 let Tlist_Show_One_File = 1 "不同时显示多个文件的tag，只显示当前文件的 
 let Tlist_File_Fold_Auto_Close = 1
