@@ -404,7 +404,7 @@ endfunc
 if (g:iswindows)
     let g:cscope_cmd=$VIMRUNTIME . "/cscope.exe"
 else
-    let g:cscope_cmd="/usr/local/bin/cscope"
+    let g:cscope_cmd="cscope"
 endif
 set cscopequickfix=s-,c-,d-,i-,t-,e-
 if has("cscope")
@@ -559,7 +559,7 @@ let Tlist_Auto_Open=1
 if (g:iswindows)
     let Tlist_Ctags_Cmd=$VIMRUNTIME . '/ctags'
 else
-    let Tlist_Ctags_Cmd='/usr/local/bin/ctags'
+    let Tlist_Ctags_Cmd='ctags'
 endif
 let Tlist_Show_One_File = 1 "不同时显示多个文件的tag，只显示当前文件的 
 let Tlist_File_Fold_Auto_Close = 1
