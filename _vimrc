@@ -153,7 +153,6 @@ au FileType html setlocal dict+=~/.vim/dict/css.dict
 
 "
 "syntastic相关
-execute pathogen#infect()
 let g:syntastic_python_checkers=['pylint']
 let g:syntastic_php_checkers=['php', 'phpcs', 'phpmd']
 "golang
@@ -405,7 +404,7 @@ endfunc
 if (g:iswindows)
     let g:cscope_cmd=$VIMRUNTIME . "/cscope.exe"
 else
-    let g:cscope_cmd="cscope"
+    let g:cscope_cmd="/usr/local/bin/cscope"
 endif
 set cscopequickfix=s-,c-,d-,i-,t-,e-
 if has("cscope")
@@ -460,7 +459,7 @@ set completeopt=preview,menu
 "允许插件  
 "filetype plugin on
 "共享剪贴板  
-set clipboard+=unnamed 
+"set clipboard+=unnamed 
 "自动保存
 set autowrite
 "set ruler                   " 打开状态栏标尺
@@ -560,7 +559,7 @@ let Tlist_Auto_Open=1
 if (g:iswindows)
     let Tlist_Ctags_Cmd=$VIMRUNTIME . '/ctags'
 else
-    let Tlist_Ctags_Cmd='ctags'
+    let Tlist_Ctags_Cmd='/usr/local/bin/ctags'
 endif
 let Tlist_Show_One_File = 1 "不同时显示多个文件的tag，只显示当前文件的 
 let Tlist_File_Fold_Auto_Close = 1
@@ -647,6 +646,7 @@ Bundle "MarcWeber/vim-addon-mw-utils"
 Bundle "tomtom/tlib_vim"
 Bundle "snipmate-snippets"
 Bundle "rails.vim"
+Bundle "RubyTest"
 
 "Bundle 'FredKSchott/CoVim'
 "Bundle 'djangojump'
@@ -671,6 +671,24 @@ filetype plugin indent on     " required!
 "
 set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*.png,*.jpg,*.gif     " MacOSX/Linux
 set wildignore+=*\\tmp\\*,*.swp,*.zip,*.exe,*.pyc,*.png,*.jpg,*.gif  " Windows
+
+"设置FuzzyFinder
+
+let mapleader = "\\"
+map <leader>F :FufFile<CR>
+map <leader>f :FufTaggedFile<CR>
+map <leader>g :FufTag<CR>
+map <leader>b :FufBuffer<CR>
+
+" 命令行下按tab键自动完成
+set wildmode=list:full
+set wildmenu
+
+" 带有如下符号的单词不要被换行分割
+set iskeyword+=_,$,@,%,#,-
+
+"使用RubyTest
+let g:rubytest_cmd_spec = "rspec -fd %p"
 
 let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
 let g:ctrlp_custom_ignore = '\v\.(exe|so|dll)$'
