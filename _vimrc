@@ -646,7 +646,10 @@ Bundle "MarcWeber/vim-addon-mw-utils"
 Bundle "tomtom/tlib_vim"
 Bundle "snipmate-snippets"
 Bundle "rails.vim"
-Bundle "RubyTest"
+Bundle "ruby.vim"
+Bundle "ftpluginruby.vim"
+Bundle "Ruby-Snippets"
+Bundle "vim-addon-ruby-debug-ide"
 
 "Bundle 'FredKSchott/CoVim'
 "Bundle 'djangojump'
