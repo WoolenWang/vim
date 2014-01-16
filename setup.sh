@@ -11,7 +11,7 @@ mv ~/vim ~/vim_old -f
 cd ~/ && git clone https://github.com/WoolenWang/vim.git
 mv ~/.vim ~/.vim_old -f
 mv ~/vim ~/.vim -f
-mv ~/.vim/_vimrc ~/.vimrc -f
+mv ~/.vim/.vimrc ~/ -f
 git clone http://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
 echo "woolen正在努力为您安装bundle程序" > woolen
 echo "安装完毕将自动退出" >> woolen
