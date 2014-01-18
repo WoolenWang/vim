@@ -14,19 +14,11 @@ let g:snippets_dir="~/.vim/snippets"
 " =============================================================================
 "        << 判断操作系统是 Windows 还是 Linux 和判断是终端还是 Gvim >>
 " =============================================================================
-
-" -----------------------------------------------------------------------------
-"  < 判断操作系统是否是 Windows 还是 Linux >
-" -----------------------------------------------------------------------------
 if(has("win32") || has("win64") || has("win95") || has("win16"))
     let g:iswindows = 1
 else
     let g:iswindows = 0
 endif
-
-" -----------------------------------------------------------------------------
-"  < 判断是终端还是 Gvim >
-" -----------------------------------------------------------------------------
 if has("gui_running")
     let g:isGUI = 1
 else
@@ -160,6 +152,159 @@ let g:syntastic_php_checkers=['php', 'phpcs', 'phpmd']
 let g:fencview_autodetect=0
 set rtp+=$GOROOT/misc/vim
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" 函数定义  
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+""定义函数SetTitle，自动插入文件头 
+func SetTitle()
+    "这里是添加文件头部自身信息标记
+    if &filetype == 'sh' || &filetype == 'python' || &filetype == 'ruby'
+        call setline(1, "\#========================================================================")
+        call append(line("."), "\# Author: Woolen.Wang")
+        call append(line(".")+1, "\# Email: just_woolen＠qq.com")
+        call append(line(".")+2, "\# File Name: ".expand("%"))
+        call append(line(".")+3, "\# Description: ")
+        call append(line(".")+4, "\#   ")
+        call append(line(".")+5, "\# Edit History: ")
+        call append(line(".")+6, "\#   ".strftime("%Y-%m-%d")."    File created.")
+        call append(line(".")+7, "\#========================================================================")
+        call append(line(".")+8, "") 
+    else
+        call setline(1, "/**")
+        call append(line("."), "=========================================================================")
+        call append(line("."), "\# Author: Woolen.Wang")
+        call append(line(".")+1, "\# Email: just_woolen＠qq.com")
+        call append(line(".")+2, "\# File Name: ".expand("%"))
+        call append(line(".")+4, " Description: ")
+        call append(line(".")+5, "   ")
+        call append(line(".")+6, " Edit History: ")
+        call append(line(".")+7, "   ".strftime("%Y-%m-%d")."    File created.")
+        call append(line(".")+8, "=========================================================================")
+        call append(line(".")+9, "**/")
+        call append(line(".")+10, "") 
+    endif
+	"这里是添加文件类型相关的头部信息
+    if &filetype == 'php'
+        call append(0, "<?php")
+        call append(line("$"), "?>")
+    endif
+    if &filetype == 'sh'
+        call append(0, "\#!/bin/bash")
+    elseif &filetype == 'python'
+        call append(0, "\#!/usr/bin/env python")
+        call append(1, "\# -*- coding: utf-8 -*-")
+    elseif &filetype == 'ruby'
+        call append(0, "\#!/usr/bin/env ruby")
+        call append(1, "\# -*- coding: utf-8 -*-")
+    endif
+endfunc
+
+"定义函数打开关闭NerdTree(左目录树),默认是不开的
+let g:isNerdTreeOpen=0
+func! ShowHideNerdTree()
+    if g:isNerdTreeOpen
+        exec ":NERDTreeClose"
+        let g:isNerdTreeOpen=0
+    else
+        exec ":NERDTree"
+        let g:isNerdTreeOpen=1
+    endif
+endfunc
+
+"编译并运行文件
+func! CompileRun()
+    exec "w"
+    if &filetype == 'c'
+        exec "!g++ % -o %<"
+        exec "!time ./%<"
+    elseif &filetype == 'cpp'
+        exec "!g++ % -o %<"
+        exec "!time ./%<"
+    elseif &filetype == 'java' 
+        exec "!javac %" 
+        exec "!time java %<"
+    elseif &filetype == 'sh'
+        :!time bash %
+    elseif &filetype == 'python'
+        exec "!time python2.7 %"
+    elseif &filetype == 'html'
+        exec "!firefox % &"
+    elseif &filetype == 'go'
+        "        exec "!go build %<"
+        exec "!time go run %"
+    elseif &filetype == 'mkd'
+        exec "!~/.vim/markdown.pl % > %.html &"
+        exec "!firefox %.html &"
+    elseif &filetype == 'php'
+        exec "!php %"
+    endif
+endfunc
+
+"调试模式运行文件
+func! Rungdb()
+    exec "w"
+    if &filetype == 'c'
+        exec "!gcc % -g -o %<"
+        exec "!gdb %<"
+    elseif &filetype == 'cpp'
+        exec "!g++ % -g -o %<"
+        exec "!gdb %<"
+    elseif &filetype == 'php'
+        exec "!php %"
+    elseif &filetype == 'sh'
+        exec "!bash -x %"
+    endif
+endfunc
+
+
+"定义FormartSrc(),格式化文件
+func FormartSrc()
+    exec "w"
+    if &filetype == 'c'
+        exec "!astyle --style=ansi -a --suffix=none %"
+    elseif &filetype == 'cpp' || &filetype == 'hpp'
+        exec "r !astyle --style=ansi --one-line=keep-statements -a --suffix=none %> /dev/null 2>&1"
+    elseif &filetype == 'perl'
+        exec "!astyle --style=gnu --suffix=none %"
+    elseif &filetype == 'py'||&filetype == 'python'
+        exec "r !autopep8 -i --aggressive %"
+    elseif &filetype == 'java'
+        exec "!astyle --style=java --suffix=none %"
+    elseif &filetype == 'jsp'
+        exec "!astyle --style=gnu --suffix=none %"
+    elseif &filetype == 'xml'
+        exec "!astyle --style=gnu --suffix=none %"
+    else
+        exec "normal gg=G"
+        return
+    endif
+    exec "e! %"
+endfunc
+
+"自动加载Cscope和Ctags数据文件,目录自动递归往上遍历
+function! AutoLoadCTagsAndCScope()
+    let max = 5
+    let dir = './'
+    let i = 0
+    let break = 0
+    while isdirectory(dir) && i < max
+        if filereadable(dir . 'cscope.out') 
+            execute 'cs add ' . dir . 'cscope.out'
+            let break = 1
+        endif
+        if filereadable(dir . 'tags')
+            execute 'set tags =' . dir . 'tags'
+            let break = 1
+        endif
+        if break == 1
+            execute 'lcd ' . dir
+            break
+        endif
+        let dir = dir . '../'
+        let i = i + 1
+    endwhile
+endf
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " 显示相关  
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 syntax on
@@ -223,6 +368,9 @@ set iskeyword+=_,$,@,%,#,-
 au BufRead,BufNewFile *.{md,mdown,mkd,mkdn,markdown,mdwn}   set filetype=mkd
 au BufRead,BufNewFile *.{go}   set filetype=go
 au BufRead,BufNewFile *.{js}   set filetype=javascript
+au BufRead,BufNewFile *.{c}   set filetype=c
+au BufRead,BufNewFile *.{cpp}   set filetype=cpp
+au BufRead,BufNewFile *.{h}   set filetype=cpp
 "rkdown to HTML  
 nmap md :!~/.vim/markdown.pl % > %.html <CR><CR>
 nmap fi :!firefox %.html & <CR><CR>
@@ -239,58 +387,16 @@ nmap tt :%s/\t/    /g<CR>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "新建.c,.h,.sh,.java文件，自动插入文件头 
 autocmd BufNewFile *.cpp,*.[ch],*.sh,*.java,*.py exec ":call SetTitle()" 
-""定义函数SetTitle，自动插入文件头 
-func SetTitle()
-    "如果文件类型为.sh文件
-    if &filetype == 'sh' || &filetype == 'python' || &filetype == 'ruby'
-        call setline(1, "\#========================================================================")
-        call append(line("."), "\# Author: Woolen.Wang")
-        call append(line(".")+1, "\# Email: just_woolen＠qq.com")
-        call append(line(".")+2, "\# File Name: ".expand("%"))
-        call append(line(".")+3, "\# Description: ")
-        call append(line(".")+4, "\#   ")
-        call append(line(".")+5, "\# Edit History: ")
-        call append(line(".")+6, "\#   ".strftime("%Y-%m-%d")."    File created.")
-        call append(line(".")+7, "\#========================================================================")
-        call append(line(".")+8, "") 
-    else
-        call setline(1, "/**")
-        call append(line("."), "=========================================================================")
-        call append(line("."), "\# Author: Woolen.Wang")
-        call append(line(".")+1, "\# Email: just_woolen＠qq.com")
-        call append(line(".")+2, "\# File Name: ".expand("%"))
-        call append(line(".")+4, " Description: ")
-        call append(line(".")+5, "   ")
-        call append(line(".")+6, " Edit History: ")
-        call append(line(".")+7, "   ".strftime("%Y-%m-%d")."    File created.")
-        call append(line(".")+8, "=========================================================================")
-        call append(line(".")+9, "**/")
-        call append(line(".")+10, "") 
-    endif
-    if &filetype == 'php'
-        call append(0, "<?php")
-        call append(line("$"), "?>")
-    endif
-    if &filetype == 'sh'
-        call append(0, "\#!/bin/bash")
-    elseif &filetype == 'python'
-        call append(0, "\#!/usr/bin/env python")
-        call append(1, "\# -*- coding: utf-8 -*-")
-    elseif &filetype == 'ruby'
-        call append(0, "\#!/usr/bin/env ruby")
-        call append(1, "\# -*- coding: utf-8 -*-")
-    endif
-endfunc
 autocmd BufNewFile * normal G
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "键盘命令
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-:nmap <silent> <F9> <ESC>:Tlist<RETURN>
 map! <C-Z> <Esc>zzi
 map! <C-O> <C-Y>,
 map <C-A> ggVG$"+y
+"F12作为整个文件使用=号格式化
 map <F12> gg=G
 map <C-w> <C-w>w
 imap <C-k> <C-y>,
@@ -303,102 +409,43 @@ imap <C-e> <Esc>$
 vmap <C-c> "+y
 set mouse=v
 "set clipboard=unnamed
-"去空行  
+"F2去掉去空行
 nnoremap <F2> :g/^\s*$/d<CR> 
 "比较文件  
 nnoremap <C-F2> :vert diffsplit 
 "nnoremap <Leader>fu :CtrlPFunky<Cr>
 "nnoremap <C-n> :CtrlPFunky<Cr>
 "列出当前目录文件  
-let g:isNerdTreeOpen=0
 map <F3> :call ShowHideNerdTree()<CR>  
-func! ShowHideNerdTree()
-    if g:isNerdTreeOpen
-        exec ":NERDTreeClose"
-        let g:isNerdTreeOpen=0
-    else
-        exec ":NERDTree"
-        let g:isNerdTreeOpen=1
-    endif
-endfunc
+"源代码 按F5编译运行
+map <F5> :call CompileRun()<CR>
 "打开树状文件目录  
 map <C-F3> \be  
 :autocmd BufRead,BufNewFile *.dot map <F5> :w<CR>:!dot -Tjpg -o %<.jpg % && eog %<.jpg  <CR><CR> && exec "redr!"
-"源代码 按F5编译运行
-map <F5> :call CompileRun()<CR>
-func! CompileRun()
-    exec "w"
-    if &filetype == 'c'
-        exec "!g++ % -o %<"
-        exec "!time ./%<"
-    elseif &filetype == 'cpp'
-        exec "!g++ % -o %<"
-        exec "!time ./%<"
-    elseif &filetype == 'java' 
-        exec "!javac %" 
-        exec "!time java %<"
-    elseif &filetype == 'sh'
-        :!time bash %
-    elseif &filetype == 'python'
-        exec "!time python2.7 %"
-    elseif &filetype == 'html'
-        exec "!firefox % &"
-    elseif &filetype == 'go'
-        "        exec "!go build %<"
-        exec "!time go run %"
-    elseif &filetype == 'mkd'
-        exec "!~/.vim/markdown.pl % > %.html &"
-        exec "!firefox %.html &"
-    elseif &filetype == 'php'
-        exec "!php %"
-    endif
-endfunc
 "代码的调试
 map <F6> :call Rungdb()<CR>
-func! Rungdb()
-    exec "w"
-    if &filetype == 'c'
-        exec "!gcc % -g -o %<"
-        exec "!gdb %<"
-    elseif &filetype == 'cpp'
-        exec "!g++ % -g -o %<"
-        exec "!gdb %<"
-    elseif &filetype == 'php'
-        exec "!php %"
-    elseif &filetype == 'sh'
-        exec "!bash -x %"
-    endif
-endfunc
-
-
 "代码格式优化化
-
 map <F8> :call FormartSrc()<CR><CR>
 
-"定义FormartSrc()
-func FormartSrc()
-    exec "w"
-    if &filetype == 'c'
-        exec "!astyle --style=ansi -a --suffix=none %"
-    elseif &filetype == 'cpp' || &filetype == 'hpp'
-        exec "r !astyle --style=ansi --one-line=keep-statements -a --suffix=none %> /dev/null 2>&1"
-    elseif &filetype == 'perl'
-        exec "!astyle --style=gnu --suffix=none %"
-    elseif &filetype == 'py'||&filetype == 'python'
-        exec "r !autopep8 -i --aggressive %"
-    elseif &filetype == 'java'
-        exec "!astyle --style=java --suffix=none %"
-    elseif &filetype == 'jsp'
-        exec "!astyle --style=gnu --suffix=none %"
-    elseif &filetype == 'xml'
-        exec "!astyle --style=gnu --suffix=none %"
-    else
-        exec "normal gg=G"
-        return
-    endif
-    exec "e! %"
-endfunc
-"结束定义FormartSrc
+"F7加载Cscope和Ctags文件
+nmap <F7> :call AutoLoadCTagsAndCScope()<CR>
+"F9打开关闭TagList
+:nmap <silent> <F9> <ESC>:Tlist<RETURN>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" CTags,Cscope的设定  
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let Tlist_Sort_Type = "name"    " 按照名称排序  
+let Tlist_Use_Right_Window = 1  " 在右侧显示窗口  
+let Tlist_Compart_Format = 1    " 压缩方式  
+let Tlist_Exist_OnlyWindow = 1  " 如果只有一个buffer，kill窗口也kill掉buffer  
+""let Tlist_File_Fold_Auto_Close = 0  " 不要关闭其他文件的tags  
+""let Tlist_Enable_Fold_Column = 0    " 不要显示折叠树  
+"let Tlist_Show_One_File=1            "不同时显示多个文件的tag，只显示当前文件的
+"设置tags  
+"set tags=tags  
+"set autochdir 
+
 
 "设置Cscope
 if (g:iswindows)
@@ -407,24 +454,6 @@ else
     let g:cscope_cmd="cscope"
 endif
 set cscopequickfix=s-,c-,d-,i-,t-,e-
-if has("cscope")
-    let &csprg=g:cscope_cmd
-    set csto=1
-    set cst
-    set csverb
-    set cspc=3
-    "add any database in current dir
-    if filereadable("cscope.out")
-        cs add cscope.out
-    "else search cscope.out elsewhere
-    else
-        let cscope_file=findfile("cscope.out", ".;")
-        "echo cscope_file
-        if !empty(cscope_file) && filereadable(cscope_file)
-            exe "cs add" cscope_file
-        endif      
-     endif
-endif
 "cscope 的一些热键
 nmap <C-\>s :cs find s <C-R>=expand("<cword>")<CR><CR>  
 nmap <C-\>g :cs find g <C-R>=expand("<cword>")<CR><CR>  
@@ -480,9 +509,6 @@ set noswapfile
 "搜索忽略大小写
 set ignorecase
 
-
-
-
 set linespace=0
 " 增强模式中的命令行自动完成操作
 set wildmenu
@@ -504,46 +530,9 @@ set showmatch
 set matchtime=1
 " 光标移动到buffer的顶部和底部时保持3行距离
 set scrolloff=3
-" 为C程序提供自动缩进
-"自动补全
-"":inoremap ( ()<ESC>i
-"":inoremap ) <c-r>=ClosePair(')')<CR>
-":inoremap { {<CR>}<ESC>O
-":inoremap } <c-r>=ClosePair('}')<CR>
-"":inoremap [ []<ESC>i
-"":inoremap ] <c-r>=ClosePair(']')<CR>
-"":inoremap " ""<ESC>i
-"":inoremap ' ''<ESC>i
-""function! ClosePair(char)
-""	if getline('.')[col('.') - 1] == a:char
-""		return "\<Right>"
-""	else
-""		return a:char
-""	endif
-""endfunction
 filetype plugin indent on 
 "打开文件类型检测, 加了这句才可以用智能补全
 set completeopt=longest,menu
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" CTags的设定  
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let Tlist_Sort_Type = "name"    " 按照名称排序  
-let Tlist_Use_Right_Window = 1  " 在右侧显示窗口  
-let Tlist_Compart_Format = 1    " 压缩方式  
-let Tlist_Exist_OnlyWindow = 1  " 如果只有一个buffer，kill窗口也kill掉buffer  
-""let Tlist_File_Fold_Auto_Close = 0  " 不要关闭其他文件的tags  
-""let Tlist_Enable_Fold_Column = 0    " 不要显示折叠树  
-"let Tlist_Show_One_File=1            "不同时显示多个文件的tag，只显示当前文件的
-"设置tags  
-"set tags=tags  
-"set autochdir 
-
-
-
-
-
-
-
 
 
 
@@ -570,7 +559,6 @@ let g:miniBufExplMapWindowNavVim = 1
 let g:miniBufExplMapWindowNavArrows = 1
 let g:miniBufExplMapCTabSwitchBufs = 1
 let g:miniBufExplModSelTarget = 1  
-nmap tl :Tlist<cr>
 
 
 
@@ -600,6 +588,9 @@ autocmd FileType python set omnifunc=pythoncomplete#Complete
 "set nocompatible               " be iMproved
 "filetype off                   " required!
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"Bundle 管理的工具
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
 
@@ -620,13 +611,13 @@ Bundle 'FuzzyFinder'
 " non github repos
 Bundle 'Command-T'
 Bundle 'Auto-Pairs'
-Bundle 'python-imports.vim'
+"Bundle 'python-imports.vim'
 Bundle 'CaptureClipboard'
 Bundle 'ctrlp-modified.vim'
 Bundle 'last_edit_marker.vim'
 Bundle 'synmark.vim'
 "Bundle 'Python-mode-klen'
-Bundle 'SQLComplete.vim'
+"Bundle 'SQLComplete.vim'
 Bundle 'Javascript-OmniCompletion-with-YUI-and-j'
 "Bundle 'JavaScript-Indent'
 "Bundle 'Better-Javascript-Indentation'
@@ -638,8 +629,8 @@ Bundle 'tacahiroy/ctrlp-funky'
 Bundle 'jsbeautify'
 Bundle 'The-NERD-Commenter'
 "django
-Bundle 'django_templates.vim'
-Bundle 'Django-Projects'
+"Bundle 'django_templates.vim'
+"Bundle 'Django-Projects'
 
 "ruby the need plugin
 Bundle "MarcWeber/vim-addon-mw-utils"
