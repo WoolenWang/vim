@@ -110,16 +110,16 @@ if g:isGUI
     set guioptions-=r
     set guioptions-=L
     map <silent> <c-F11> :if &guioptions =~# 'm' <Bar>
-        \set guioptions-=m <Bar>
-        \set guioptions-=T <Bar>
-        \set guioptions-=r <Bar>
-        \set guioptions-=L <Bar>
-    \else <Bar>
-        \set guioptions+=m <Bar>
-        \set guioptions+=T <Bar>
-        \set guioptions+=r <Bar>
-        \set guioptions+=L <Bar>
-    \endif<CR>
+                \set guioptions-=m <Bar>
+                \set guioptions-=T <Bar>
+                \set guioptions-=r <Bar>
+                \set guioptions-=L <Bar>
+                \else <Bar>
+                \set guioptions+=m <Bar>
+                \set guioptions+=T <Bar>
+                \set guioptions+=r <Bar>
+                \set guioptions+=L <Bar>
+                \endif<CR>
 endif
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -154,7 +154,7 @@ func! SetTitle()
         call append(line(".")+9, "**/")
         call append(line(".")+10, "") 
     endif
-	"这里是添加文件类型相关的头部信息
+    "这里是添加文件类型相关的头部信息
     if &filetype == 'php'
         call append(0, "<?php")
         call append(line("$"), "?>")
@@ -609,16 +609,18 @@ Bundle "vim-addon-ruby-debug-ide"
 Bundle "c.vim"
 "代码快速跳转工具,头文件和C文件间跳转
 Bundle "a.vim"
+Bundle "cpp.vim"
 "自动完成工具(代码提示)
 Bundle "AutoComplPop"
 Bundle "OmniCppComplete"
+"使用Tab直接生成代码 http://files.myopera.com/mbbill/files/code_complete.gif
+Bundle "code_complete"
 "Bundle 'FredKSchott/CoVim'
 "Bundle 'djangojump'
 " ...
 let g:html_indent_inctags = "html,body,head,tbody"
 let g:html_indent_script1 = "inc"
 let g:html_indent_style1 = "inc"
-
 
 "
 "ctrlp设置
