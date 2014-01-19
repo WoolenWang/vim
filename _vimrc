@@ -283,7 +283,7 @@ set cul                             "高亮光标所在行
 set cuc
 set shortmess=atI                   " 启动的时候不显示那个援助乌干达儿童的提示  
 set go=                             " 不要图形按钮  
-color desert                        " 设置背景主题  
+color solarized                        " 设置背景主题  
 "color ron                          " 设置背景主题  
 "color torte                        " 设置背景主题  
 "autocmd InsertLeave * se nocul     " 用浅色高亮当前行  
@@ -332,15 +332,15 @@ set selection=inclusive
 set wildmenu
 set mousemodel=popup
 let g:snippets_dir=g:userHome . "/.vim/snippets"
-
-au FileType php setlocal dict+=g:userHome . "/.vim/dict/php_funclist.dict"
-au FileType css setlocal dict+=g:userHome . "/.vim/dict/css.dict"
-au FileType c setlocal dict+=g:userHome . "/.vim/dict/c.dict"
-au FileType cpp setlocal dict+=g:userHome . "/.vim/dict/cpp.dict"
-au FileType scale setlocal dict+=g:userHome . "/.vim/dict/scale.dict"
-au FileType javascript setlocal dict+=g:userHome . "/.vim/dict/javascript.dict"
-au FileType html setlocal dict+=g:userHome . "/.vim/dict/javascript.dict"
-au FileType html setlocal dict+=g:userHome . "/.vim/dict/css.dict"
+let g:tmp_dictionary=&dict
+autocmd FileType php let &dict= g:tmp_dictionary . g:userHome . "/.vim/dict/php_funclist.dict"
+autocmd FileType css let &dict= g:tmp_dictionary . g:userHome . "/.vim/dict/css.dict"
+autocmd FileType c let &dict= g:tmp_dictionary . g:userHome . "/.vim/dict/c.dict"
+autocmd FileType cpp let &dict= g:tmp_dictionary . g:userHome . "/.vim/dict/cpp.dict"
+autocmd FileType scale let &dict= g:tmp_dictionary . g:userHome . "/.vim/dict/scale.dict"
+autocmd FileType javascript let &dict= g:tmp_dictionary . g:userHome . "/.vim/dict/javascript.dict"
+autocmd FileType html let &dict= g:tmp_dictionary . g:userHome . "/.vim/dict/javascript.dict"
+autocmd FileType html let &dict= g:tmp_dictionary . g:userHome . "/.vim/dict/css.dict"
 
 "syntastic相关
 let g:syntastic_python_checkers=['pylint']
@@ -350,12 +350,12 @@ let g:syntastic_php_checkers=['php', 'phpcs', 'phpmd']
 let g:fencview_autodetect=0
 set rtp+=$GOROOT/misc/vim
 "markdown配置
-au BufRead,BufNewFile *.{md,mdown,mkd,mkdn,markdown,mdwn}   set filetype=mkd
-au BufRead,BufNewFile *.{go}   set filetype=go
-au BufRead,BufNewFile *.{js}   set filetype=javascript
-au BufRead,BufNewFile *.{c}   set filetype=c
-au BufRead,BufNewFile *.{cpp}   set filetype=cpp
-au BufRead,BufNewFile *.{h}   set filetype=cpp
+autocmd BufRead,BufNewFile *.{md,mdown,mkd,mkdn,markdown,mdwn}   set filetype=mkd
+autocmd BufRead,BufNewFile *.{go}   set filetype=go
+autocmd BufRead,BufNewFile *.{js}   set filetype=javascript
+autocmd BufRead,BufNewFile *.{c}   set filetype=c
+autocmd BufRead,BufNewFile *.{cpp}   set filetype=cpp
+autocmd BufRead,BufNewFile *.{h}   set filetype=cpp
 "rkdown to HTML  我都没用mardown,暂时不设置
 "let g:markdownExe=g:userHome . "/.vim/markdown.pl"
 "nmap md :exec "!". g:userHome . "/.vim/markdown.pl % > %.html " <CR><CR>
@@ -372,7 +372,7 @@ nmap tt :%s/\t/    /g<CR>
 """""新文件标题
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "新建.c,.h,.sh,.java文件，自动插入文件头 
-autocmd BufNewFile *.cpp,*.[ch],*.sh,*.java,*.py exec ":call SetTitle()" 
+autocmd BufNewFile *.cpp,*.[ch],*.sh,*.java,*.py,*.rb exec ":call SetTitle()" 
 autocmd BufNewFile * normal G
 
 
@@ -453,19 +453,13 @@ nmap <C-\>d :cs find d <C-R>=expand("<cword>")<CR><CR>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 ""实用设置
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-if has("autocmd")
-    autocmd BufReadPost *
-                \ if line("'\"") > 0 && line("'\"") <= line("$") |
-                \   exe "normal g`\"" |
-                \ endif
-endif
 "当打开vim且没有文件时自动打开NERDTree
 autocmd vimenter * if !argc() | NERDTree | endif
 " 只剩 NERDTree时自动关闭
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
 
-" quickfix模式
-autocmd FileType c,cpp map <buffer> <leader><space> :w<cr>:make<cr>
+" 根据文件类型来Map热键
+"autocmd FileType c,cpp map <buffer> <leader><space> :w<cr>:make<cr>
 set autoread                                " 设置当文件被改动时自动载入
 set completeopt=preview,menu                "代码补全 
 set clipboard+=unnamed                      "共享剪贴板  
@@ -541,8 +535,6 @@ set fileencodings=utf8,ucs-bom,gbk,cp936,gb2312,gb18030
 
 autocmd FileType python set omnifunc=pythoncomplete#Complete
 
-"set nocompatible               " be iMproved
-"filetype off                   " required!
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "Bundle 管理的工具
