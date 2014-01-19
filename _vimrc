@@ -1,30 +1,19 @@
-set sw=4 
-set ts=4
-set et
-set smarttab
-set smartindent
-set lbr
-set fo+=mB
-set sm
-set selection=inclusive
-set wildmenu
-set mousemodel=popup
-let g:snippets_dir="~/.vim/snippets"
 
 " =============================================================================
 "        << 判断操作系统是 Windows 还是 Linux 和判断是终端还是 Gvim >>
 " =============================================================================
 if(has("win32") || has("win64") || has("win95") || has("win16"))
     let g:iswindows = 1
+    let g:userHome = $USERPROFILE
 else
     let g:iswindows = 0
+    let g:userHome = $HOME
 endif
 if has("gui_running")
     let g:isGUI = 1
 else
     let g:isGUI = 0
 endif
-
 " =============================================================================
 "                          << 以下为软件默认配置 >>
 " =============================================================================
@@ -39,7 +28,7 @@ if (g:iswindows && g:isGUI)
     set diffexpr=MyDiff()
     set guifont=YaHei_Consolas_Hybrid:h12:cANSI   " 设置字体  YaHei_Consolas_Hybrid:h10 Courier_New:h10:cANSI
 
-    function MyDiff()
+    function! MyDiff()
         let opt = '-a --binary '
         if &diffopt =~ 'icase' | let opt = opt . '-i ' | endif
         if &diffopt =~ 'iwhite' | let opt = opt . '-b ' | endif
@@ -133,30 +122,12 @@ if g:isGUI
     \endif<CR>
 endif
 
-au FileType php setlocal dict+=~/.vim/dict/php_funclist.dict
-au FileType css setlocal dict+=~/.vim/dict/css.dict
-au FileType c setlocal dict+=~/.vim/dict/c.dict
-au FileType cpp setlocal dict+=~/.vim/dict/cpp.dict
-au FileType scale setlocal dict+=~/.vim/dict/scale.dict
-au FileType javascript setlocal dict+=~/.vim/dict/javascript.dict
-au FileType html setlocal dict+=~/.vim/dict/javascript.dict
-au FileType html setlocal dict+=~/.vim/dict/css.dict
-
-
-"
-"syntastic相关
-let g:syntastic_python_checkers=['pylint']
-let g:syntastic_php_checkers=['php', 'phpcs', 'phpmd']
-"golang
-"Processing... % (ctrl+c to stop)
-let g:fencview_autodetect=0
-set rtp+=$GOROOT/misc/vim
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " 函数定义  
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 ""定义函数SetTitle，自动插入文件头 
-func SetTitle()
+func! SetTitle()
     "这里是添加文件头部自身信息标记
     if &filetype == 'sh' || &filetype == 'python' || &filetype == 'ruby'
         call setline(1, "\#========================================================================")
@@ -233,7 +204,7 @@ func! CompileRun()
         "        exec "!go build %<"
         exec "!time go run %"
     elseif &filetype == 'mkd'
-        exec "!~/.vim/markdown.pl % > %.html &"
+        exec "!". g:userHome . "/.vim/markdown.pl % > %.html &"
         exec "!firefox %.html &"
     elseif &filetype == 'php'
         exec "!php %"
@@ -258,7 +229,7 @@ endfunc
 
 
 "定义FormartSrc(),格式化文件
-func FormartSrc()
+func! FormartSrc()
     exec "w"
     if &filetype == 'c'
         exec "!astyle --style=ansi -a --suffix=none %"
@@ -304,28 +275,28 @@ function! AutoLoadCTagsAndCScope()
         let i = i + 1
     endwhile
 endf
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" 显示相关  
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" =============================================================================
+"    << Vim系统整体设置 >>
+" =============================================================================
 syntax on
-set cul "高亮光标所在行
+set cul                             "高亮光标所在行
 set cuc
-set shortmess=atI   " 启动的时候不显示那个援助乌干达儿童的提示  
-set go=             " 不要图形按钮  
-"color desert     " 设置背景主题  
-color ron     " 设置背景主题  
-"color torte     " 设置背景主题  
-"autocmd InsertLeave * se nocul  " 用浅色高亮当前行  
-autocmd InsertEnter * se cul    " 用浅色高亮当前行  
-set ruler           " 显示标尺  
-set showcmd         " 输入的命令显示出来，看的清楚些  
-"set whichwrap+=<,>,h,l   " 允许backspace和光标键跨越行边界(不建议)  
-set scrolloff=3     " 光标移动到buffer的顶部和底部时保持3行距离  
+set shortmess=atI                   " 启动的时候不显示那个援助乌干达儿童的提示  
+set go=                             " 不要图形按钮  
+color desert                        " 设置背景主题  
+"color ron                          " 设置背景主题  
+"color torte                        " 设置背景主题  
+"autocmd InsertLeave * se nocul     " 用浅色高亮当前行  
+autocmd InsertEnter * se cul        " 用浅色高亮当前行  
+set ruler                           " 显示标尺  
+set showcmd                         " 输入的命令显示出来，看的清楚些  
+"set whichwrap+=<,>,h,l             " 允许backspace和光标键跨越行边界(不建议)  
+set scrolloff=3                     " 光标移动到buffer的顶部和底部时保持3行距离  
 set statusline=%F%m%r%h%w\ [FORMAT=%{&ff}]\ [TYPE=%Y]\ [POS=%l,%v][%p%%]\ %{strftime(\"%d/%m/%y\ -\ %H:%M\")}   "状态行显示的内容  
-set laststatus=2    " 启动显示状态行(1),总是显示状态行(2)  
-"set foldenable      " 允许折叠  
-""set foldmethod=manual   " 手动折叠  
-set nocompatible  "去掉讨厌的有关vi一致性模式，避免以前版本的一些bug和局限  
+set laststatus=2                    " 启动显示状态行(1),总是显示状态行(2)  
+set foldenable                      " 允许折叠  
+set foldmethod=manual               " 手动折叠  
+set nocompatible                    "去掉讨厌的有关vi一致性模式，避免以前版本的一些bug和局限  
 " 显示中文帮助
 if version >= 603
     set helplang=cn
@@ -334,36 +305,50 @@ endif
 " 自动缩进
 set autoindent
 set cindent
-" Tab键的宽度
-set tabstop=4
-" 统一缩进为4
-set softtabstop=4
+set tabstop=4                       " Tab键的宽度
+set softtabstop=4                   " 统一缩进为4
 set shiftwidth=4
-" 不要用空格代替制表符
-set expandtab
-" 在行和段开始处使用制表符
-set smarttab
-" 显示行号
-set number
-" 历史记录数
-set history=1000
-"搜索逐字符高亮
-set hlsearch
+set expandtab                       " 不要用空格代替制表符
+set smarttab                        " 在行和段开始处使用制表符
+set smartindent                     "自动缩进
+set number                          " 显示行号
+set history=1000                    " 历史记录数
+set hlsearch                        "搜索逐字符高亮
 set incsearch
-" 总是显示状态行
-set cmdheight=2
-" 侦测文件类型
-filetype on
-" 载入文件类型插件
-filetype plugin on
-" 为特定文件类型载入相关缩进文件
-filetype indent on
-" 保存全局变量
-set viminfo+=!
-" 带有如下符号的单词不要被换行分割
-set iskeyword+=_,$,@,%,#,-
+set cmdheight=2                     " 总是显示状态行
+filetype on                         " 侦测文件类型
+filetype plugin on                  " 载入文件类型插件
+filetype indent on                  " 为特定文件类型载入相关缩进文件
+set viminfo+=!                      " 保存全局变量
+set iskeyword+=_,$,@,%,#,-          " 带有如下符号的单词不要被换行分割
+autocmd! BufWritePost $MYVIMRC source % "自动加载vimrc,vimrc一修改就自动加载之
 " 字符间插入的像素行数目
 
+set et
+set lbr
+set fo+=mB
+set sm
+set selection=inclusive
+set wildmenu
+set mousemodel=popup
+let g:snippets_dir=g:userHome . "/.vim/snippets"
+
+au FileType php setlocal dict+=g:userHome . "/.vim/dict/php_funclist.dict"
+au FileType css setlocal dict+=g:userHome . "/.vim/dict/css.dict"
+au FileType c setlocal dict+=g:userHome . "/.vim/dict/c.dict"
+au FileType cpp setlocal dict+=g:userHome . "/.vim/dict/cpp.dict"
+au FileType scale setlocal dict+=g:userHome . "/.vim/dict/scale.dict"
+au FileType javascript setlocal dict+=g:userHome . "/.vim/dict/javascript.dict"
+au FileType html setlocal dict+=g:userHome . "/.vim/dict/javascript.dict"
+au FileType html setlocal dict+=g:userHome . "/.vim/dict/css.dict"
+
+"syntastic相关
+let g:syntastic_python_checkers=['pylint']
+let g:syntastic_php_checkers=['php', 'phpcs', 'phpmd']
+"golang
+"Processing... % (ctrl+c to stop)
+let g:fencview_autodetect=0
+set rtp+=$GOROOT/misc/vim
 "markdown配置
 au BufRead,BufNewFile *.{md,mdown,mkd,mkdn,markdown,mdwn}   set filetype=mkd
 au BufRead,BufNewFile *.{go}   set filetype=go
@@ -371,11 +356,12 @@ au BufRead,BufNewFile *.{js}   set filetype=javascript
 au BufRead,BufNewFile *.{c}   set filetype=c
 au BufRead,BufNewFile *.{cpp}   set filetype=cpp
 au BufRead,BufNewFile *.{h}   set filetype=cpp
-"rkdown to HTML  
-nmap md :!~/.vim/markdown.pl % > %.html <CR><CR>
-nmap fi :!firefox %.html & <CR><CR>
-nmap \ \cc
-vmap \ \cc
+"rkdown to HTML  我都没用mardown,暂时不设置
+"let g:markdownExe=g:userHome . "/.vim/markdown.pl"
+"nmap md :exec "!". g:userHome . "/.vim/markdown.pl % > %.html " <CR><CR>
+"nmap fi :!firefox %.html & <CR><CR>
+"nmap \ \cc
+"vmap \ \cc
 
 "将tab替换为空格
 nmap tt :%s/\t/    /g<CR>
@@ -409,10 +395,10 @@ imap <C-e> <Esc>$
 vmap <C-c> "+y
 set mouse=v
 "set clipboard=unnamed
-"F2去掉去空行
-nnoremap <F2> :g/^\s*$/d<CR> 
+"F4去掉去空行
+nnoremap <F4> :g/^\s*$/d<CR> 
 "比较文件  
-nnoremap <C-F2> :vert diffsplit 
+nnoremap <C-F4> :vert diffsplit 
 "nnoremap <Leader>fu :CtrlPFunky<Cr>
 "nnoremap <C-n> :CtrlPFunky<Cr>
 "列出当前目录文件  
@@ -426,7 +412,6 @@ map <C-F3> \be
 map <F6> :call Rungdb()<CR>
 "代码格式优化化
 map <F8> :call FormartSrc()<CR><CR>
-
 "F7加载Cscope和Ctags文件
 nmap <F7> :call AutoLoadCTagsAndCScope()<CR>
 "F9打开关闭TagList
@@ -439,12 +424,12 @@ let Tlist_Sort_Type = "name"    " 按照名称排序
 let Tlist_Use_Right_Window = 1  " 在右侧显示窗口  
 let Tlist_Compart_Format = 1    " 压缩方式  
 let Tlist_Exist_OnlyWindow = 1  " 如果只有一个buffer，kill窗口也kill掉buffer  
-""let Tlist_File_Fold_Auto_Close = 0  " 不要关闭其他文件的tags  
+let Tlist_File_Fold_Auto_Close = 1  " 当前不被编辑的文件方法列表自动折叠
 ""let Tlist_Enable_Fold_Column = 0    " 不要显示折叠树  
 "let Tlist_Show_One_File=1            "不同时显示多个文件的tag，只显示当前文件的
 "设置tags  
 "set tags=tags  
-"set autochdir 
+set autochdir 
 
 
 "设置Cscope
@@ -479,63 +464,38 @@ autocmd vimenter * if !argc() | NERDTree | endif
 " 只剩 NERDTree时自动关闭
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
 
-" 设置当文件被改动时自动载入
-set autoread
 " quickfix模式
 autocmd FileType c,cpp map <buffer> <leader><space> :w<cr>:make<cr>
-"代码补全 
-set completeopt=preview,menu 
-"允许插件  
-"filetype plugin on
-"共享剪贴板  
-"set clipboard+=unnamed 
-"自动保存
-set autowrite
-"set ruler                   " 打开状态栏标尺
-"set cursorline              " 突出显示当前行
-set magic                   " 设置魔术
+set autoread                                " 设置当文件被改动时自动载入
+set completeopt=preview,menu                "代码补全 
+set clipboard+=unnamed                      "共享剪贴板  
+set autowrite                               "自动保存
+"set ruler                                  " 打开状态栏标尺
+"set cursorline                             " 突出显示当前行
+set magic                                   " 设置魔术
 ""set foldcolumn=0
 ""set foldmethod=indent 
 ""set foldlevel=3 
-" 不要使用vi的键盘模式，而是vim自己的
-set nocompatible
-" 去掉输入错误的提示声音
-set noeb
-" 在处理未保存或只读文件的时候，弹出确认
-set confirm
-"禁止生成临时文件
-set nobackup
+set nocompatible                            " 不要使用vi的键盘模式，而是vim自己的
+set noeb                                    " 去掉输入错误的提示声音
+set confirm                                 " 在处理未保存或只读文件的时候，弹出确认
+set nobackup                                "禁止生成临时文件
 set noswapfile
-"搜索忽略大小写
-set ignorecase
-
+set ignorecase                              "搜索忽略大小写
 set linespace=0
-" 增强模式中的命令行自动完成操作
-set wildmenu
-" 使回格键（backspace）正常处理indent, eol, start等
-set backspace=2
-" 允许backspace和光标键跨越行边界
-set whichwrap+=<,>,h,l
-" 可以在buffer的任何地方使用鼠标（类似office中在工作区双击鼠标定位）
-set mouse=a
+set wildmenu                                " 增强模式中的命令行自动完成操作
+set backspace=2                             " 使回格键（backspace）正常处理indent, eol, start等
+set whichwrap+=<,>,h,l                      " 允许backspace和光标键跨越行边界
+set mouse=a                                 " 可以在buffer的任何地方使用鼠标（类似office中在工作区双击鼠标定位）
 set selection=exclusive
 set selectmode=mouse,key
-" 通过使用: commands命令，告诉我们文件的哪一行被改变过
-set report=0
-" 在被分割的窗口间显示空白，便于阅读
-set fillchars=vert:\ ,stl:\ ,stlnc:\
-" 高亮显示匹配的括号
-set showmatch
-" 匹配括号高亮的时间（单位是十分之一秒）
-set matchtime=1
-" 光标移动到buffer的顶部和底部时保持3行距离
-set scrolloff=3
+set report=0                                " 通过使用: commands命令，告诉我们文件的哪一行被改变过
+set fillchars=vert:\ ,stl:\ ,stlnc:\        " 在被分割的窗口间显示空白，便于阅读
+set showmatch                               " 高亮显示匹配的括号
+set matchtime=1                             " 匹配括号高亮的时间（单位是十分之一秒）
+set scrolloff=3                             " 光标移动到buffer的顶部和底部时保持3行距离
 filetype plugin indent on 
-"打开文件类型检测, 加了这句才可以用智能补全
-set completeopt=longest,menu
-
-
-
+set completeopt=longest,menu                "打开文件类型检测, 加了这句才可以用智能补全
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "其他东东
@@ -560,8 +520,6 @@ let g:miniBufExplMapWindowNavArrows = 1
 let g:miniBufExplMapCTabSwitchBufs = 1
 let g:miniBufExplModSelTarget = 1  
 
-
-
 "输入法
 :let g:vimim_map='c-/'
 ":let g:vimim_cloud='sougou' " QQ云输入
@@ -569,15 +527,13 @@ let g:miniBufExplModSelTarget = 1
 :set pastetoggle=<C-H>
 :let g:vimim_cloud=-1
 
-
 "python补全
-let g:pydiction_location = '~/.vim/after/complete-dict'
+let g:pydiction_location = g:userHome . '/.vim/after/complete-dict'
 let g:pydiction_menu_height = 20
 let g:miniBufExplMapWindowNavVim = 1
 let g:miniBufExplMapWindowNavArrows = 1
 let g:miniBufExplMapCTabSwitchBufs = 1
 let g:miniBufExplModSelTarget = 1
-
 
 set iskeyword+=.
 set termencoding=utf-8
@@ -591,15 +547,21 @@ autocmd FileType python set omnifunc=pythoncomplete#Complete
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "Bundle 管理的工具
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set rtp+=~/.vim/bundle/vundle/
+let s:tmp_rtp=&rtp
+let s:tmp_rtp=s:tmp_rtp . "," . g:userHome . "/.vim/bundle/vundle/"
+let &rtp=s:tmp_rtp
 call vundle#rc()
 
-" let Vundle manage Vundle
-" required! 
+" 让Vundle管理工具,这是必须的哈
 Bundle 'gmarik/vundle'
 
-" My Bundles here:
-"
+"通用工具集::
+"顶头标签栏,可以在打开过的文件间切换,不需要设置
+Bundle "minibufexplorerpp" 
+"在quickfix中快速过滤
+Bundle "QFGrep.vim"
+"Visual-Mark,类似于UE中的BookMark,可以记住浏览的代码行数,来回跳转,热键是F2,<c-F2>,mm,<shift-F2>
+Bundle "Visual-Mark"
 " original repos on github
 Bundle 'tpope/vim-fugitive'
 Bundle 'rstacruz/sparkup', {'rtp': 'vim/'}
@@ -632,7 +594,7 @@ Bundle 'The-NERD-Commenter'
 "Bundle 'django_templates.vim'
 "Bundle 'Django-Projects'
 
-"ruby the need plugin
+"ruby语言的Plugin
 Bundle "MarcWeber/vim-addon-mw-utils"
 Bundle "tomtom/tlib_vim"
 Bundle "snipmate-snippets"
@@ -642,6 +604,14 @@ Bundle "ftpluginruby.vim"
 Bundle "Ruby-Snippets"
 Bundle "vim-addon-ruby-debug-ide"
 
+"C语言的Plugin
+"C/C++的IDE,支持模板和各种操作
+Bundle "c.vim"
+"代码快速跳转工具,头文件和C文件间跳转
+Bundle "a.vim"
+"自动完成工具(代码提示)
+Bundle "AutoComplPop"
+Bundle "OmniCppComplete"
 "Bundle 'FredKSchott/CoVim'
 "Bundle 'djangojump'
 " ...
@@ -649,17 +619,7 @@ let g:html_indent_inctags = "html,body,head,tbody"
 let g:html_indent_script1 = "inc"
 let g:html_indent_style1 = "inc"
 
-filetype plugin indent on     " required!
-"
-" Brief help
-" :BundleList          - list configured bundles
-" :BundleInstall(!)    - install(update) bundles
-" :BundleSearch(!) foo - search(or refresh cache first) for foo
-" :BundleClean(!)      - confirm(or auto-approve) removal of unused bundles
-"
-" see :h vundle for more details or wiki for FAQ
-" NOTE: comments after Bundle command are not allowed..
-"
+
 "
 "ctrlp设置
 "
@@ -699,3 +659,12 @@ if (g:iswindows && g:isGUI)
     "解决consle输出乱码
     language messages zh_CN.utf-8
 endif
+
+
+" ==============================================================
+" <<<<<<<<<<< 相关热键介绍与帮助 >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+" ==============================================================
+" C_vim: 热键:: 帮助: \hp , 插入函数: \if ,插入头文件 \+ih \+ich, Make: \rm,
+" , MakeClean: \rmc  注释: /*   http://lug.fh-swf.de/vim/vim-c/c-hotkeys.pdf
+" Bundle: :BundleList, :BundleInstall(!),  :BundleSearch(!) foo, :BundleClean(!), :h help;
+"
