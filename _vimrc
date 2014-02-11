@@ -325,6 +325,8 @@ set iskeyword+=_,$,@,%,#,-          " 带有如下符号的单词不要被换行
 autocmd! BufWritePost $MYVIMRC source % "自动加载vimrc,vimrc一修改就自动加载之
 " 字符间插入的像素行数目
 
+"文本语言编码检测
+set fencs=ucs-bom,utf-8,gb18030,gbk,gb2312,big5,euc-jp,euc-kr,latin1,cp936,utf-16
 set et
 set lbr
 set fo+=mB
@@ -416,7 +418,7 @@ map <F8> :call FormartSrc()<CR><CR>
 "F7加载Cscope和Ctags文件
 nmap <F7> :call AutoLoadCTagsAndCScope()<CR>
 "F9打开关闭TagList
-:nmap <silent> <F9> <ESC>:Tlist<RETURN>
+:nmap <silent> <A-l> <ESC>:Tlist<RETURN>
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " CTags,Cscope的设定  
