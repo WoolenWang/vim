@@ -8,6 +8,7 @@
 # Edit History: 
 #   2014-01-11    File created.
 #========================================================================
-find `pwd` -name "*.h" -o -name "*.c" -o -name "*.cpp" -o -name "*.cc" -o -name "*.rb" -o -name "*.erb" > cscope.files 
+find `pwd` -name "*.h" -o -name "*.c" -o -name "*.cpp" -o -name "*.php" -o -name "*.js" -o -name "*.sh" -o -name "*.cc" -o -name "*.rb" -o -name "*.erb" > cscope.files 
+find /usr/include -name "*.h" -o -name "*.c" -o -name "*.cpp" >> cscope.files
 cscope -bkq -i cscope.files 
 ctags -R 
