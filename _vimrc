@@ -228,8 +228,8 @@ func! Rungdb()
 endfunc
 
 
-"定义FormartSrc(),格式化文件
-func! FormartSrc()
+"定义FormatSrc(),格式化文件
+func! FormatSrc()
     exec "w"
     if &filetype == 'c'
         exec "!astyle --style=ansi -a --suffix=none %"
@@ -296,7 +296,9 @@ set scrolloff=3                     " 光标移动到buffer的顶部和底部时
 set statusline=%F%m%r%h%w\ [FORMAT=%{&ff}]\ [TYPE=%Y]\ [POS=%l,%v][%p%%]\ %{strftime(\"%d/%m/%y\ -\ %H:%M\")}   "状态行显示的内容  
 set laststatus=2                    " 启动显示状态行(1),总是显示状态行(2)  
 set foldenable                      " 允许折叠  
-set foldmethod=manual               " 手动折叠  
+set foldmethod=indent               " 手动折叠  
+set foldcolumn=0
+set foldlevel=3 
 set nocompatible                    "去掉讨厌的有关vi一致性模式，避免以前版本的一些bug和局限  
 " 显示中文帮助
 if version >= 603
@@ -337,6 +339,7 @@ set mousemodel=popup
 let g:snippets_dir=g:userHome . "/.vim/snippets"
 let g:tmp_dictionary=&dict
 autocmd FileType php let &dict= g:tmp_dictionary . g:userHome . "/.vim/dict/php_funclist.dict"
+autocmd FileType php set omnifunc=phpcomplete#CompletePHP
 autocmd FileType css let &dict= g:tmp_dictionary . g:userHome . "/.vim/dict/css.dict"
 autocmd FileType c let &dict= g:tmp_dictionary . g:userHome . "/.vim/dict/c.dict"
 autocmd FileType cpp let &dict= g:tmp_dictionary . g:userHome . "/.vim/dict/cpp.dict"
@@ -344,6 +347,7 @@ autocmd FileType scale let &dict= g:tmp_dictionary . g:userHome . "/.vim/dict/sc
 autocmd FileType javascript let &dict= g:tmp_dictionary . g:userHome . "/.vim/dict/javascript.dict"
 autocmd FileType html let &dict= g:tmp_dictionary . g:userHome . "/.vim/dict/javascript.dict"
 autocmd FileType html let &dict= g:tmp_dictionary . g:userHome . "/.vim/dict/css.dict"
+autocmd FileType python set omnifunc=pythoncomplete#Complete
 
 "syntastic相关
 let g:syntastic_python_checkers=['pylint']
@@ -383,42 +387,30 @@ autocmd BufNewFile * normal G
 "键盘命令
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 map! <C-Z> <Esc>zzi
-map! <C-O> <C-Y>,
 map <C-A> ggVG$"+y
-"F12作为整个文件使用=号格式化
-map <F12> gg=G
 map <C-w> <C-w>w
 imap <C-k> <C-y>,
-imap <C-j> <ESC>
-" 选中状态下 Ctrl+c 复制
-"map <C-v> "*pa
 imap <C-v> <Esc>"*pa
-imap <C-a> <Esc>^
-imap <C-e> <Esc>$
 vmap <C-c> "+y
 set mouse=v
 "set clipboard=unnamed
-"F4去掉去空行
-nnoremap <F4> :g/^\s*$/d<CR> 
 "比较文件  
 nnoremap <C-F4> :vert diffsplit 
-"nnoremap <Leader>fu :CtrlPFunky<Cr>
-"nnoremap <C-n> :CtrlPFunky<Cr>
 "列出当前目录文件  
 map <F3> :call ShowHideNerdTree()<CR>  
+"F4打开关闭TagList
+nmap <F4> <ESC>:Tlist<RETURN>
 "源代码 按F5编译运行
 map <F5> :call CompileRun()<CR>
-"打开树状文件目录  
-map <C-F3> \be  
-:autocmd BufRead,BufNewFile *.dot map <F5> :w<CR>:!dot -Tjpg -o %<.jpg % && eog %<.jpg  <CR><CR> && exec "redr!"
 "代码的调试
 map <F6> :call Rungdb()<CR>
 "代码格式优化化
-map <F8> :call FormartSrc()<CR><CR>
+map <F8> :call FormatSrc()<CR><CR>
 "F7加载Cscope和Ctags文件
 nmap <F7> :call AutoLoadCTagsAndCScope()<CR>
-"F9打开关闭TagList
-:nmap <silent> <A-l> <ESC>:Tlist<RETURN>
+"设置自定义的<leader>快捷键
+let mapleader=","
+let g:mapleader=","
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " CTags,Cscope的设定  
@@ -470,13 +462,11 @@ set autowrite                               "自动保存
 "set ruler                                  " 打开状态栏标尺
 "set cursorline                             " 突出显示当前行
 set magic                                   " 设置魔术
-""set foldcolumn=0
-""set foldmethod=indent 
-""set foldlevel=3 
 set nocompatible                            " 不要使用vi的键盘模式，而是vim自己的
 set noeb                                    " 去掉输入错误的提示声音
 set confirm                                 " 在处理未保存或只读文件的时候，弹出确认
 set nobackup                                "禁止生成临时文件
+set writebackup                             "关闭文件的时候自动备份一次
 set noswapfile
 set ignorecase                              "搜索忽略大小写
 set linespace=0
@@ -497,8 +487,8 @@ set completeopt=longest,menu                "打开文件类型检测, 加了这
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "其他东东
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"默认打开Taglist 
-let Tlist_Auto_Open=1 
+"不默认打开Taglist 
+let Tlist_Auto_Open=0 
 """""""""""""""""""""""""""""" 
 " Tag list (ctags) 
 """""""""""""""""""""""""""""""" 
@@ -520,7 +510,7 @@ let g:miniBufExplModSelTarget = 1
 "输入法
 :let g:vimim_map='c-/'
 ":let g:vimim_cloud='sougou' " QQ云输入
-:let g:vimim_punctuation=0	" 不用中文标点
+:let g:vimim_punctuation=0    " 不用中文标点
 :set pastetoggle=<C-H>
 :let g:vimim_cloud=-1
 
@@ -532,11 +522,21 @@ let g:miniBufExplMapWindowNavArrows = 1
 let g:miniBufExplMapCTabSwitchBufs = 1
 let g:miniBufExplModSelTarget = 1
 
+" plugin - mru.vim 记录最近打开的文件
+let MRU_File = $VIMFILES.'/_vim_mru_files'
+let MRU_Max_Entries = 1000
+let MRU_Add_Menu = 0
+nmap <leader>f :MRU<CR>
+
+" {{{ plugin - jsbeautify.vim 优化js代码，并不是简单的缩进，而是整个优化
+" 开始优化整个文件
+nmap <silent> <leader>js :call g:Jsbeautify()<cr>
+" }}}
+
 set iskeyword+=.
 set termencoding=utf-8
 set fileencodings=utf8,ucs-bom,gbk,cp936,gb2312,gb18030
 
-autocmd FileType python set omnifunc=pythoncomplete#Complete
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -553,6 +553,12 @@ Bundle 'gmarik/vundle'
 "通用工具集::
 "顶头标签栏,可以在打开过的文件间切换,不需要设置
 Bundle "minibufexplorerpp" 
+"缩进工具
+Bundle 'IndentAnything'
+" 最近打开的文件
+Bundle 'mru.vim'
+" 版本管理
+Bundle 'vcscommand.vim'
 "在quickfix中快速过滤
 Bundle "QFGrep.vim"
 "Visual-Mark,类似于UE中的BookMark,可以记住浏览的代码行数,来回跳转,热键是F2,<c-F2>,mm,<shift-F2>
@@ -568,17 +574,10 @@ Bundle 'FuzzyFinder'
 " non github repos
 Bundle 'Command-T'
 Bundle 'Auto-Pairs'
-"Bundle 'python-imports.vim'
 Bundle 'CaptureClipboard'
 Bundle 'ctrlp-modified.vim'
 Bundle 'last_edit_marker.vim'
 Bundle 'synmark.vim'
-"Bundle 'Python-mode-klen'
-"Bundle 'SQLComplete.vim'
-Bundle 'Javascript-OmniCompletion-with-YUI-and-j'
-"Bundle 'JavaScript-Indent'
-"Bundle 'Better-Javascript-Indentation'
-Bundle 'jslint.vim'
 Bundle "pangloss/vim-javascript"
 Bundle 'Vim-Script-Updater'
 Bundle 'ctrlp.vim'
@@ -610,8 +609,14 @@ Bundle "AutoComplPop"
 Bundle "OmniCppComplete"
 "使用Tab直接生成代码 http://files.myopera.com/mbbill/files/code_complete.gif
 Bundle "code_complete"
-"Bundle 'FredKSchott/CoVim'
-"Bundle 'djangojump'
+
+" javascript 的插件::
+Bundle 'Javascript-OmniCompletion-with-YUI-and-j'
+Bundle 'JavaScript-Indent'
+Bundle 'jslint.vim'
+
+"   PHP的插件 ::
+Bundle 'ZenCoding.vim'
 " ...
 let g:html_indent_inctags = "html,body,head,tbody"
 let g:html_indent_script1 = "inc"
@@ -665,3 +670,13 @@ endif
 " , MakeClean: \rmc  注释: /*   http://lug.fh-swf.de/vim/vim-c/c-hotkeys.pdf
 " Bundle: :BundleList, :BundleInstall(!),  :BundleSearch(!) foo, :BundleClean(!), :h help;
 "
+"   PHP:: ctrl + x -> ctrl + o (Ctrl + n / p 上下选择) 
+"   PHP:: ctrl + y / ,
+"{{{ plugin - NERD_commenter.vim 注释代码用的，
+" <leader>ca 在可选的注释方式之间切换，比如C/C++ 的块注释和行注释//
+" <leader>cc 注释当前行
+" <leader>cs 以”性感”的方式注释
+" <leader>cA 在当前行尾添加注释符，并进入Insert模式
+" <leader>cu 取消注释
+" <leader>cm 添加块注释
+" }}}"
