@@ -77,6 +77,7 @@ if !g:iswindows
 
     if g:isGUI
         " Source a global configuration file if available
+        set guifont=WenQuanYi\ Micro\ Hei\ Mono\ 11
         if filereadable("/etc/vim/gvimrc.local")
             source /etc/vim/gvimrc.local
         endif
@@ -559,6 +560,15 @@ Bundle 'IndentAnything'
 Bundle 'mru.vim'
 " 版本管理
 Bundle 'vcscommand.vim'
+" 可以方便地修改字符串，括号什么的： 修改字符串双引变单引 cs”’ 删除字符串 : ds"
+Bundle 'surround.vim'
+" 模仿TextMate
+" 的代码提醒功能,全部提醒都用tab来展示，按了tab就有了，唯一就是要添加一些文件支持
+Bundle 'snipMate'
+" 文件语法检查，支持多种语言的
+Bundle 'Syntastic'
+" 使用 \ + t 来搜索文件整个项目中的文件
+Bundle 'Command-T'
 "在quickfix中快速过滤
 Bundle "QFGrep.vim"
 "Visual-Mark,类似于UE中的BookMark,可以记住浏览的代码行数,来回跳转,热键是F2,<c-F2>,mm,<shift-F2>
@@ -572,7 +582,6 @@ let g:indentLine_char = '┊'
 Bundle 'L9'
 Bundle 'FuzzyFinder'
 " non github repos
-Bundle 'Command-T'
 Bundle 'Auto-Pairs'
 Bundle 'CaptureClipboard'
 Bundle 'ctrlp-modified.vim'
