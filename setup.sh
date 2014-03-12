@@ -16,6 +16,7 @@ copy_files_to_home()
     cd ~/ && git clone https://github.com/WoolenWang/vim.git -o vim
     mv ~/vim ~/.vim -f
     mv ~/.vim/_vimrc ~/.vimrc -f
+    cp ~/.vim/cscope_ctags.sh /usr/sbin/mk_cscope_ctags
 }
 make_all_bundle_plugin()
 {
@@ -25,7 +26,9 @@ make_all_bundle_plugin()
     echo "请耐心等待" >> woolen
     vim woolen -c "BundleInstall" -c "q" -c "q"
     rm woolen
+    local thisdir=`pwd`
     cd ~/.vim/bundle/Command-T/ruby/command-t;ruby extconf.rb && make;
+    cd $thisdir
 }
 main()
 {
