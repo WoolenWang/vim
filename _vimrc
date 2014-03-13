@@ -209,6 +209,8 @@ func! CompileRun()
         exec "!firefox %.html &"
     elseif &filetype == 'php'
         exec "!php %"
+    elseif &filetype == 'ruby'
+        exec "!ruby %"
     endif
 endfunc
 
@@ -242,6 +244,8 @@ func! FormatSrc()
         exec "r !autopep8 -i --aggressive %"
     elseif &filetype == 'java'
         exec "!astyle --style=java --suffix=none %"
+    elseif &filetype == 'ruby'
+        exec "!astyle --style=ruby --suffix=none %"
     elseif &filetype == 'jsp'
         exec "!astyle --style=gnu --suffix=none %"
     elseif &filetype == 'xml'
@@ -255,7 +259,7 @@ endfunc
 
 "自动加载Cscope和Ctags数据文件,目录自动递归往上遍历
 function! AutoLoadCTagsAndCScope()
-    let max = 5
+    let max = 8
     let dir = './'
     let i = 0
     let break = 0
@@ -339,16 +343,23 @@ set wildmenu
 set mousemodel=popup
 let g:snippets_dir=g:userHome . "/.vim/snippets"
 let g:tmp_dictionary=&dict
+" 自动完成设置字典和相关完成提示的函数
 autocmd FileType php let &dict= g:tmp_dictionary . g:userHome . "/.vim/dict/php_funclist.dict"
 autocmd FileType php set omnifunc=phpcomplete#CompletePHP
 autocmd FileType css let &dict= g:tmp_dictionary . g:userHome . "/.vim/dict/css.dict"
+autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
 autocmd FileType c let &dict= g:tmp_dictionary . g:userHome . "/.vim/dict/c.dict"
 autocmd FileType cpp let &dict= g:tmp_dictionary . g:userHome . "/.vim/dict/cpp.dict"
 autocmd FileType scale let &dict= g:tmp_dictionary . g:userHome . "/.vim/dict/scale.dict"
 autocmd FileType javascript let &dict= g:tmp_dictionary . g:userHome . "/.vim/dict/javascript.dict"
+autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
 autocmd FileType html let &dict= g:tmp_dictionary . g:userHome . "/.vim/dict/javascript.dict"
 autocmd FileType html let &dict= g:tmp_dictionary . g:userHome . "/.vim/dict/css.dict"
-autocmd FileType python set omnifunc=pythoncomplete#Complete
+autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+autocmd FileType ruby setlocal omnifunc=rubycomplete#Complete
+autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
 
 "syntastic相关
 let g:syntastic_python_checkers=['pylint']
@@ -364,6 +375,10 @@ autocmd BufRead,BufNewFile *.{js}   set filetype=javascript
 autocmd BufRead,BufNewFile *.{c}   set filetype=c
 autocmd BufRead,BufNewFile *.{cpp}   set filetype=cpp
 autocmd BufRead,BufNewFile *.{h}   set filetype=cpp
+autocmd BufRead,BufNewFile *.{rb}   set filetype=ruby
+autocmd BufRead,BufNewFile *.{php}   set filetype=php
+" 自动跳转到新打开文件的所在目录里
+autocmd BufEnter * if bufname("") !~ "^\[A-Za-z0-9\]*://" | lcd %:p:h | endif
 "rkdown to HTML  我都没用mardown,暂时不设置
 "let g:markdownExe=g:userHome . "/.vim/markdown.pl"
 "nmap md :exec "!". g:userHome . "/.vim/markdown.pl % > %.html " <CR><CR>
@@ -409,6 +424,21 @@ map <F6> :call Rungdb()<CR>
 map <F8> :call FormatSrc()<CR><CR>
 "F7加载Cscope和Ctags文件
 nmap <F7> :call AutoLoadCTagsAndCScope()<CR>
+" 自动完成的热键，undo的？
+inoremap <expr><C-g>     neocomplcache#undo_completion()
+inoremap <expr><C-l>     neocomplcache#complete_common_string()
+" 不侵入行的热键替换 =====
+" <ESC> takes you out of insert mode
+inoremap <expr> <Esc>   pumvisible() ? "\<C-y>\<Esc>" : "\<Esc>"
+" <CR> accepts first, then sends the <CR>
+inoremap <expr> <CR>    pumvisible() ? "\<C-y>\<CR>" : "\<CR>"
+" <Down> and <Up> cycle like <Tab> and <S-Tab>
+inoremap <expr> <Down>  pumvisible() ? "\<C-n>" : "\<Down>"
+inoremap <expr> <Up>    pumvisible() ? "\<C-p>" : "\<Up>"
+" Jump up and down the list
+inoremap <expr> <C-d>   pumvisible() ? "\<PageDown>\<C-p>\<C-n>" : "\<C-d>"
+inoremap <expr> <C-u>   pumvisible() ? "\<PageUp>\<C-p>\<C-n>" : "\<C-u>"
+"==========================
 "设置自定义的<leader>快捷键
 let mapleader=","
 let g:mapleader=","
@@ -529,6 +559,41 @@ let MRU_Max_Entries = 1000
 let MRU_Add_Menu = 0
 nmap <leader>f :MRU<CR>
 
+"===================这里都是neocomplcache的一些设置==========================
+" Disable AutoComplPop.
+let g:acp_enableAtStartup = 0
+" Use neocomplcache.
+let g:neocomplcache_enable_at_startup = 1
+" Use smartcase.
+let g:neocomplcache_enable_smart_case = 1
+" Set minimum syntax keyword length.
+let g:neocomplcache_min_syntax_length = 3
+let g:neocomplcache_lock_buffer_name_pattern = '\*ku\*'
+"OMNI的设置，自动提示的相关设置项
+if !exists('g:neocomplcache_omni_patterns')
+    let g:neocomplcache_omni_patterns = {}
+endif
+let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
+let g:neocomplcache_omni_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
+let g:neocomplcache_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
+"==================自动提示的设置===========================================
+" PIV 设置 {
+    let g:DisableAutoPHPFolding = 0
+    let g:PIVAutoClose = 0
+"}
+
+" ctrlp 设置｛
+let g:ctrlp_working_path_mode = 'ra'
+if g:iswindows
+    let s:ctrlp_fallback = 'dir %s /-n /b /s /a-d'
+elseif executable('ag')
+    let s:ctrlp_fallback = 'ag %s --nocolor -l -g ""'
+elseif executable('ack')
+    let s:ctrlp_fallback = 'ack %s --nocolor -f'
+else
+    let s:ctrlp_fallback = 'find %s -type f'
+endif
+"}
 " {{{ plugin - jsbeautify.vim 优化js代码，并不是简单的缩进，而是整个优化
 " 开始优化整个文件
 nmap <silent> <leader>js :call g:Jsbeautify()<cr>
@@ -568,11 +633,17 @@ Bundle 'snipMate'
 " 文件语法检查，支持多种语言的
 Bundle 'Syntastic'
 " 使用 \ + t 来搜索文件整个项目中的文件
-Bundle 'Command-T'
+" Bundle 'Command-T'
+" 替代command-T 热键是：<c-p>
+Bundle 'ctrlp.vim'
+
 "在quickfix中快速过滤
 Bundle "QFGrep.vim"
 "Visual-Mark,类似于UE中的BookMark,可以记住浏览的代码行数,来回跳转,热键是F2,<c-F2>,mm,<shift-F2>
 Bundle "Visual-Mark"
+"加强版的自动提示程序
+Bundle 'neocomplcache-snippets_complete'
+Bundle 'neocomplcache'
 " original repos on github
 Bundle 'tpope/vim-fugitive'
 Bundle 'rstacruz/sparkup', {'rtp': 'vim/'}
@@ -592,6 +663,7 @@ Bundle 'Vim-Script-Updater'
 Bundle 'ctrlp.vim'
 Bundle 'tacahiroy/ctrlp-funky'
 Bundle 'jsbeautify'
+" 自动注释，热键是：<Leader>c<space>
 Bundle 'The-NERD-Commenter'
 "django
 "Bundle 'django_templates.vim'
@@ -606,6 +678,8 @@ Bundle "ruby.vim"
 Bundle "ftpluginruby.vim"
 Bundle "Ruby-Snippets"
 Bundle "vim-addon-ruby-debug-ide"
+" 自动补全end
+Bundle 'ruby-macros.vim'
 
 "C语言的Plugin
 "C/C++的IDE,支持模板和各种操作
@@ -626,6 +700,10 @@ Bundle 'jslint.vim'
 
 "   PHP的插件 ::
 Bundle 'ZenCoding.vim'
+" Full PHP documentation manual (hit K on any function for full docs)
+" Autocomplete of classes, functions, variables, constants and language
+" keywords
+Bundle 'PIV'
 " ...
 let g:html_indent_inctags = "html,body,head,tbody"
 let g:html_indent_script1 = "inc"
