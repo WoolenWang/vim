@@ -301,7 +301,7 @@ set scrolloff=3                     " 光标移动到buffer的顶部和底部时
 set statusline=%F%m%r%h%w\ [FORMAT=%{&ff}]\ [TYPE=%Y]\ [POS=%l,%v][%p%%]\ %{strftime(\"%d/%m/%y\ -\ %H:%M\")}   "状态行显示的内容  
 set laststatus=2                    " 启动显示状态行(1),总是显示状态行(2)  
 set foldenable                      " 允许折叠  
-set foldmethod=indent               " 手动折叠  
+"set foldmethod=indent               " 手动折叠  
 set foldcolumn=0
 set foldlevel=3 
 set nocompatible                    "去掉讨厌的有关vi一致性模式，避免以前版本的一些bug和局限  
@@ -427,17 +427,6 @@ nmap <F7> :call AutoLoadCTagsAndCScope()<CR>
 " 自动完成的热键，undo的？
 inoremap <expr><C-g>     neocomplcache#undo_completion()
 inoremap <expr><C-l>     neocomplcache#complete_common_string()
-" 不侵入行的热键替换 =====
-" <ESC> takes you out of insert mode
-inoremap <expr> <Esc>   pumvisible() ? "\<C-y>\<Esc>" : "\<Esc>"
-" <CR> accepts first, then sends the <CR>
-inoremap <expr> <CR>    pumvisible() ? "\<C-y>\<CR>" : "\<CR>"
-" <Down> and <Up> cycle like <Tab> and <S-Tab>
-inoremap <expr> <Down>  pumvisible() ? "\<C-n>" : "\<Down>"
-inoremap <expr> <Up>    pumvisible() ? "\<C-p>" : "\<Up>"
-" Jump up and down the list
-inoremap <expr> <C-d>   pumvisible() ? "\<PageDown>\<C-p>\<C-n>" : "\<C-d>"
-inoremap <expr> <C-u>   pumvisible() ? "\<PageUp>\<C-p>\<C-n>" : "\<C-u>"
 "==========================
 "设置自定义的<leader>快捷键
 let mapleader=","
@@ -548,10 +537,10 @@ let g:miniBufExplModSelTarget = 1
 "python补全
 let g:pydiction_location = g:userHome . '/.vim/after/complete-dict'
 let g:pydiction_menu_height = 20
-let g:miniBufExplMapWindowNavVim = 1
-let g:miniBufExplMapWindowNavArrows = 1
-let g:miniBufExplMapCTabSwitchBufs = 1
-let g:miniBufExplModSelTarget = 1
+"let g:miniBufExplMapWindowNavVim = 1
+"let g:miniBufExplMapWindowNavArrows = 1
+"let g:miniBufExplMapCTabSwitchBufs = 1
+"let g:miniBufExplModSelTarget = 1
 
 " plugin - mru.vim 记录最近打开的文件
 let MRU_File = $VIMFILES.'/_vim_mru_files'
@@ -578,8 +567,8 @@ let g:neocomplcache_omni_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
 let g:neocomplcache_omni_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 "==================自动提示的设置===========================================
 " PIV 设置 {
-    let g:DisableAutoPHPFolding = 0
-    let g:PIVAutoClose = 0
+let g:DisableAutoPHPFolding = 0
+let g:PIVAutoClose = 0
 "}
 
 " ctrlp 设置｛
@@ -618,7 +607,7 @@ Bundle 'gmarik/vundle'
 
 "通用工具集::
 "顶头标签栏,可以在打开过的文件间切换,不需要设置
-Bundle "minibufexplorerpp" 
+"Bundle "minibufexplorerpp" 
 "缩进工具
 Bundle 'IndentAnything'
 " 最近打开的文件
@@ -634,7 +623,7 @@ Bundle 'snipMate'
 Bundle 'Syntastic'
 " 使用 \ + t 来搜索文件整个项目中的文件
 " Bundle 'Command-T'
-" 替代command-T 热键是：<c-p>
+" 替代command-T 热键是：ctrl + p <c-p>
 Bundle 'ctrlp.vim'
 
 "在quickfix中快速过滤
@@ -648,7 +637,8 @@ Bundle 'neocomplcache'
 Bundle 'tpope/vim-fugitive'
 Bundle 'rstacruz/sparkup', {'rtp': 'vim/'}
 Bundle 'Yggdroot/indentLine'
-let g:indentLine_char = '┊'
+let g:indentLine_char = '|'
+Bundle 'UltiSnips'
 " vim-scripts repos
 Bundle 'L9'
 Bundle 'FuzzyFinder'
@@ -696,7 +686,8 @@ Bundle "code_complete"
 " javascript 的插件::
 Bundle 'Javascript-OmniCompletion-with-YUI-and-j'
 Bundle 'JavaScript-Indent'
-Bundle 'jslint.vim'
+"没必要用到js检查语法的插件
+"Bundle 'jslint.vim'
 
 "   PHP的插件 ::
 Bundle 'ZenCoding.vim'
