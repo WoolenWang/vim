@@ -528,11 +528,6 @@ let g:miniBufExplMapCTabSwitchBufs = 1
 let g:miniBufExplModSelTarget = 1  
 
 "输入法
-:let g:vimim_map='c-/'
-":let g:vimim_cloud='sougou' " QQ云输入
-:let g:vimim_punctuation=0    " 不用中文标点
-:set pastetoggle=<C-H>
-:let g:vimim_cloud=-1
 
 "python补全
 let g:pydiction_location = g:userHome . '/.vim/after/complete-dict'
@@ -650,7 +645,6 @@ Bundle 'last_edit_marker.vim'
 Bundle 'synmark.vim'
 Bundle "pangloss/vim-javascript"
 Bundle 'Vim-Script-Updater'
-Bundle 'ctrlp.vim'
 Bundle 'tacahiroy/ctrlp-funky'
 Bundle 'jsbeautify'
 " 自动注释，热键是：<Leader>c<space>
